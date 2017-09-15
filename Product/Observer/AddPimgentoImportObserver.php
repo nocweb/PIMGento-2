@@ -126,6 +126,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
                 'comment' => __('Remove old products'),
                 'method'  => 'removeOldProducts',
             ),
+            array(
+                'comment' => __('Set all products to is in stock'),
+                'method'  => 'setAllIsInStock',
+            ),
         );
 
         $stepsAfter = array(

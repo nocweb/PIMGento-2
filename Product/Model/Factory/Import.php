@@ -1171,7 +1171,18 @@ class Import extends Factory
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
 
-        $this->setMessage($query);
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
+
+    public function setAllIsInStock() {
+        $connection = $this->_entities->getResource()->getConnection();
+
+        $query = "UPDATE cataloginventory_stock_item SET backorders=1, is_in_stock=1";
+
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
 
         $this->setMessage(
             __('Updated ').$updatedCount.__(' rows')
