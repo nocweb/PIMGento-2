@@ -18,6 +18,8 @@ class PimgentoImportCommand extends Command
 
     const IMPORT_FILE = 'file';
 
+    const IMPORT_REMOVEPRODUCTS = 'remove_unused';
+
     /**
      * @var \Pimgento\Import\Model\Import
      */
@@ -50,7 +52,8 @@ class PimgentoImportCommand extends Command
         $this->setName('pimgento:import')
             ->setDescription('Import PIM files to Magento')
             ->addOption(self::IMPORT_CODE, null, InputOption::VALUE_REQUIRED)
-            ->addOption(self::IMPORT_FILE, null, InputOption::VALUE_REQUIRED);
+            ->addOption(self::IMPORT_FILE, null, InputOption::VALUE_REQUIRED)
+            ->addOption(self::IMPORT_REMOVEPRODUCTS, null, InputOption::VALUE_REQUIRED);
     }
 
     /**
@@ -66,11 +69,12 @@ class PimgentoImportCommand extends Command
 
         $code = $input->getOption(self::IMPORT_CODE);
         $file = $input->getOption(self::IMPORT_FILE);
+        $removeProducts = $input->getOption(self::IMPORT_REMOVEPRODUCTS);
 
         if (!$code) {
             $this->_usage($output);
         } else {
-            $this->_import($code, $file, $output);
+            $this->_import($code, $file, $removeProducts, $output);
         }
     }
 
@@ -81,10 +85,15 @@ class PimgentoImportCommand extends Command
      * @param string $file
      * @param OutputInterface $output
      */
-    protected function _import($code, $file, OutputInterface $output)
+    protected function _import($code, $file, $removeProducts, OutputInterface $output)
     {
         try {
             $import = $this->_import->load($code);
+
+            if($code == 'product') {
+                $import->setRemoveProducts($removeProducts);
+            }
+
             $import->setFile($file)->setStep(0);
 
             while ($import->canExecute()) {

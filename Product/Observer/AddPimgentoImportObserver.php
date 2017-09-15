@@ -122,6 +122,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
                 'comment' => __('Import media files'),
                 'method'  => 'importMedia',
             ),
+            array(
+                'comment' => __('Remove old products'),
+                'method'  => 'removeOldProducts',
+            ),
         );
 
         $stepsAfter = array(

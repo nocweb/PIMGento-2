@@ -1144,4 +1144,37 @@ class Import extends Factory
             $this->_media->mediaDropTmpTables();
         }
     }
+
+    public function removeOldProducts() {
+        if(!$this->getRemoveProducts()) {
+            $this->setMessage(
+                __('Removing unused products is disabled')
+            );
+            return;
+        }
+
+        $connection = $this->_entities->getResource()->getConnection();
+        $tmpTable = $this->_entities->getTableName($this->getCode());
+
+        $query = "  UPDATE catalog_product_entity_int pi
+                    JOIN (
+                        SELECT entity_id, sku FROM catalog_product_entity p
+                        WHERE p.entity_id NOT IN (
+                            SELECT tmp._entity_id FROM $tmpTable tmp
+                        )
+                    ) sq
+                    ON sq.entity_id = pi.entity_id AND pi.attribute_id=(
+                        SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4
+                    )
+                    SET pi.value=0";
+
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage($query);
+
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
 }
