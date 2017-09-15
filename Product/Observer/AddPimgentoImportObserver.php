@@ -130,6 +130,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
                 'comment' => __('Set all products to is in stock'),
                 'method'  => 'setAllIsInStock',
             ),
+            array(
+                'comment' => __('Fix associations for configurable'),
+                'method'  => 'fixConfigurableRelated',
+            ),
         );
 
         $stepsAfter = array(

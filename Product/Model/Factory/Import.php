@@ -1166,7 +1166,7 @@ class Import extends Factory
                     ON sq.entity_id = pi.entity_id AND pi.attribute_id=(
                         SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4
                     )
-                    SET pi.value=0";
+                    SET pi.value=2";
 
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
@@ -1181,6 +1181,38 @@ class Import extends Factory
 
         $query = "UPDATE cataloginventory_stock_item SET backorders=1, is_in_stock=1";
 
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
+
+    public function fixConfigurableRelated() {
+        $connection = $this->_entities->getResource()->getConnection();
+
+        $query = "  UPDATE IGNORE catalog_product_link pl
+                    JOIN catalog_product_relation pr ON pr.child_id=pl.product_id
+                    JOIN catalog_product_entity_int pi ON pi.entity_id=pr.parent_id AND pi.attribute_id=(
+                        SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4
+                    ) AND pi.value = 1
+                    SET pl.product_id=pr.parent_id";
+
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+
+        $query = "  UPDATE IGNORE catalog_product_link pl
+                    JOIN catalog_product_relation pr ON pr.child_id=pl.linked_product_id
+                    JOIN catalog_product_entity_int pi ON pi.entity_id=pr.parent_id AND pi.attribute_id=(
+                        SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4
+                    ) AND pi.value = 1
+                    SET pl.linked_product_id=pr.parent_id";
+        
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
 
