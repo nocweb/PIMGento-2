@@ -1189,6 +1189,18 @@ class Import extends Factory
         );
     }
 
+    public function clearRelated() {
+        $connection = $this->_entities->getResource()->getConnection();
+
+        $query = "DELETE FROM catalog_product_link pl";
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
+
     public function fixConfigurableRelated() {
         $connection = $this->_entities->getResource()->getConnection();
 

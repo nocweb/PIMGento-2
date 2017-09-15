@@ -111,6 +111,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
                 'method'  => 'initStock',
             ),
             array(
+                'comment' => __('Remove related products'),
+                'method'  => 'clearRelated'
+            ),
+            array(
                 'comment' => __('Update related, up-sell and cross-sell products'),
                 'method'  => 'setRelated'
             ),
