@@ -1192,7 +1192,7 @@ class Import extends Factory
     public function clearRelated() {
         $connection = $this->_entities->getResource()->getConnection();
 
-        $query = "DELETE FROM catalog_product_link pl";
+        $query = "DELETE FROM catalog_product_link";
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
 
