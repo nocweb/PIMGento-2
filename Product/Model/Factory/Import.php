@@ -1202,6 +1202,8 @@ class Import extends Factory
     }
 
     public function hideDecorationType() {
+        $connection = $this->_entities->getResource()->getConnection();
+        
         $query = "UPDATE tmp_pimgento_entities_product SET _visibility=1 WHERE categories LIKE 'master_decoration%'";
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
