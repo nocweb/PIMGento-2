@@ -91,6 +91,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
 
         $afterEntitiesCreationSteps = array(
             array(
+                'comment' => __('Hide decoration type'),
+                'method'  => 'hideDecorationType',
+            ),
+            array(
                 'comment' => __('Set values to attributes'),
                 'method'  => 'setValues',
             ),

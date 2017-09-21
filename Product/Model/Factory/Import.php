@@ -1201,6 +1201,15 @@ class Import extends Factory
         );
     }
 
+    public function hideDecorationType() {
+        $query = "UPDATE tmp_pimgento_entities_product SET _visibility=1 WHERE categories LIKE 'master_decoration%'";
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
+
     public function fixConfigurableRelated() {
         $connection = $this->_entities->getResource()->getConnection();
 
