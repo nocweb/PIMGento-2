@@ -139,6 +139,10 @@ class AddPimgentoImportObserver extends AbstractAddImportObserver implements Obs
                 'method'  => 'setAllIsInStock',
             ),
             array(
+                'comment' => __('Disable products with zero price'),
+                'method'  => 'disableProductsWithZeroPrice',
+            ),
+            array(
                 'comment' => __('Fix associations for configurable'),
                 'method'  => 'fixConfigurableRelated',
             ),

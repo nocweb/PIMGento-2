@@ -1156,6 +1156,17 @@ class Import extends Factory
         $connection = $this->_entities->getResource()->getConnection();
         $tmpTable = $this->_entities->getTableName($this->getCode());
 
+        // Ser till att alla har en status int.
+        $query = "INSERT IGNORE INTO catalog_product_entity_int (store_id, attribute_id, entity_id, `value`)
+                  SELECT store_id, (SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4) as attribute_id, entity_id, 1 AS `value` FROM catalog_product_entity pe JOIN (SELECT 0 AS store_id UNION SELECT 1 AS store_id) s WHERE entity_id NOT IN (SELECT entity_id FROM catalog_product_entity_int WHERE attribute_id=(SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4))";
+
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage(
+            __('Inserted ').$updatedCount.__(' rows')
+        );
+
         $query = "  UPDATE catalog_product_entity_int pi
                     JOIN (
                         SELECT entity_id, sku FROM catalog_product_entity p
@@ -1190,6 +1201,13 @@ class Import extends Factory
     }
 
     public function clearRelated() {
+        if(!$this->getRemoveProducts()) {
+            $this->setMessage(
+                __('Because removing unused products is disabled we will not clear Related')
+            );
+            return;
+        }
+
         $connection = $this->_entities->getResource()->getConnection();
 
         $query = "DELETE FROM catalog_product_link";
@@ -1205,6 +1223,21 @@ class Import extends Factory
         $connection = $this->_entities->getResource()->getConnection();
         
         $query = "UPDATE tmp_pimgento_entities_product SET _visibility=1 WHERE categories LIKE 'master_decoration%'";
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+        $this->setMessage(
+            __('Updated ').$updatedCount.__(' rows')
+        );
+    }
+
+    public function disableProductsWithZeroPrice() {
+        $connection = $this->_entities->getResource()->getConnection();
+
+        $query = "UPDATE catalog_product_entity_int pi
+                  JOIN catalog_product_entity pe ON type_id='simple' AND pi.entity_id = pe.entity_id
+                  JOIN catalog_product_entity_decimal pd ON pd.attribute_id=(SELECT attribute_id FROM eav_attribute WHERE attribute_code='price') AND pd.`value`=0 AND pd.store_id=0 AND pd.entity_id = pe.entity_id AND pi.attribute_id=( SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4 )
+                  SET pi.`value`= 2";
+
         $result = $connection->query($query);
         $updatedCount = $result->rowCount();
         $this->setMessage(
