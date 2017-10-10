@@ -1183,7 +1183,26 @@ class Import extends Factory
         $updatedCount = $result->rowCount();
 
         $this->setMessage(
-            __('Updated ').$updatedCount.__(' rows')
+            __('Disabled ').$updatedCount.__(' rows')
+        );
+
+        $query = "  UPDATE catalog_product_entity_int pi
+                    JOIN (
+                        SELECT entity_id, sku FROM catalog_product_entity p
+                        WHERE p.entity_id IN (
+                            SELECT tmp._entity_id FROM $tmpTable tmp
+                        )
+                    ) sq
+                    ON sq.entity_id = pi.entity_id AND pi.attribute_id=(
+                        SELECT attribute_id FROM eav_attribute WHERE attribute_code='status' AND entity_type_id=4
+                    )
+                    SET pi.value=1";
+
+        $result = $connection->query($query);
+        $updatedCount = $result->rowCount();
+
+        $this->setMessage(
+            __('Enabled ').$updatedCount.__(' rows')
         );
     }
 
