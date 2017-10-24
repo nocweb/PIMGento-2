@@ -341,7 +341,9 @@ class Media extends Factory
 
                 // remove the file if it exist
                 if (is_file($to)) {
-                    unlink($to);
+                    // continue if to file exists.
+                    continue;
+                    // unlink($to);
                 }
 
                 copy($from, $to);
